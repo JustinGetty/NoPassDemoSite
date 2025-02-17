@@ -1,7 +1,6 @@
 ---
 
 ---
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,10 +8,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sign In</title>
   <style>
-    body { font-family: Arial, sans-serif; display: flex; flex-direction: column; align-items: center; padding: 50px; }
-    input, button { padding: 10px; margin: 10px; width: 80%; max-width: 300px; }
-    button { background: #34A853; color: white; border: none; cursor: pointer; border-radius: 4px; }
-    button:hover { background: #2c8d45; }
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 50px;
+    }
+    input, button {
+      padding: 10px;
+      margin: 10px;
+      width: 80%;
+      max-width: 300px;
+    }
+    button {
+      background: #34A853;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    button:hover {
+      background: #2c8d45;
+    }
   </style>
 </head>
 <body>
@@ -35,6 +53,9 @@
         alert('Please enter your name!');
       }
     }
+
+    // Expose the function to the global scope
+    window.handleSignIn = handleSignIn;
   </script>
 </body>
 </html>

@@ -9,38 +9,45 @@
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
-	  <title>Demo Site</title>
-	  <style>
-		body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
-		button { padding: 10px 20px; background: #4285F4; color: white; border: none; cursor: pointer; border-radius: 4px; }
-		button:hover { background: #357ae8; }
-	  </style>
+		<title>Demo Site</title>
+		<style>
+			body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
+			button { padding: 10px 20px; background: #4285F4; color: white; border: none; cursor: pointer; border-radius: 4px; }
+			button:hover { background: #357ae8; }
+		</style>
 	</head>
-<body>
-  <h1>Welcome!</h1>
-  <button onclick="openSignInPopup()">Sign In with swaggy auth</button>
+	<body>
+		<h1>Welcome!</h1>
+		<button onclick="openSignInPopup()">Sign In with swaggy auth</button>
 
-  <script>
-    function openSignInPopup() {
-      const popupWidth = 500;
-      const popupHeight = 600;
-      const left = (screen.width - popupWidth) / 2;
-      const top = (screen.height - popupHeight) / 2;
+		<script>
+			window.addEventListener('message', function(event) {
+				// Ensure we only accept messages from the same origin
+				if (event.origin !== window.location.origin) return;
 
-      const popup = window.open(
-        '/popup',
-        'Sign In',
-        `width=${popupWidth},height=${popupHeight},top=${top},left=${left},resizable=no`
-      );
+				// Only process the message if it has the expected data (i.e. a name property)
+				if (event.data && event.data.name) {
+					console.log('Signed in user:', event.data);
+					alert(`Welcome, ${event.data.name}!`);
+				} else {
+					console.log('Received unexpected message:', event.data);
+				}
+			});
 
-      window.addEventListener('message', function(event) {
-        if (event.origin !== window.location.origin) return;
+			function openSignInPopup() {
+				const popupWidth = 500;
+				const popupHeight = 600;
+				const left = (screen.width - popupWidth) / 2;
+				const top = (screen.height - popupHeight) / 2;
 
-        console.log('Signed in user:', event.data);
-        alert(`Welcome, ${event.data.name}!`);
-      });
-    }
-  window.openSignInPopup = openSignInPopup;
-  </script>
-</body>
+				window.open(
+					'/popup', // This should match your popup route
+					'Sign In',
+					`width=${popupWidth},height=${popupHeight},top=${top},left=${left},resizable=no`
+				);
+			}
+
+			window.openSignInPopup = openSignInPopup;
+		</script>
+	</body>
 </html>
