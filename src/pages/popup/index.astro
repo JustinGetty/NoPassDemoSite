@@ -1,7 +1,4 @@
----
-
----
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -13,48 +10,122 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 50px;
+      justify-content: flex-start;
+      padding-top: 10px;
+      height: 100vh;
+      background-color: #ddd3a2;
+    }
+    h2 {
+      margin: 10px 0 20px 0;
+      font-size: 40px;
+      color: #333;
     }
     input, button {
-      padding: 10px;
+      padding: 14px;
       margin: 10px;
       width: 80%;
       max-width: 300px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 2px solid #ccc;
+      outline: none;
+    }
+    input {
+      background: #fff;
+      border-radius: 8px;
+      width: 270px;
     }
     button {
-      background: #34A853;
+      background: #28864a;
       color: white;
       border: none;
       cursor: pointer;
-      border-radius: 4px;
+      transition: background 0.3s, transform 0.3s;
+      border-radius: 5px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
     button:hover {
-      background: #2c8d45;
+      background: #429260;
+      transform: scale(1.03);
+    }
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    #loadingImg {
+      width: 40px;
+      display: none;
+    }
+    #approveText {
+      font-size: 18px;
+      color: #444;
+      margin-top: 15px;
+      display: none;
+    }
+    #logo {
+      width: 400px;
+      margin-bottom: 10px;
     }
   </style>
 </head>
 <body>
+  <img id="logo" src="https://cdn.georgejosef.com/BambooAuthLogo.png">
   <h2>Sign In</h2>
-  <input type="text" id="username" placeholder="Enter your name" />
-  <button onclick="handleSignIn()">Sign In</button>
+  <input type="text" id="username" placeholder="Enter your username">
+  <button id="sendButton" onclick="sendUsernameToServer()">Sign In</button>
+  <img id="loadingImg" src="https://www.svgrepo.com/show/50491/loading.svg" alt="Loading">
+  <h1 id="approveText">Please approve the request on your phone!</h1>
 
   <script>
-    function handleSignIn() {
-      const username = document.getElementById('username').value;
 
+    /*
+    TODO: 
+    - Add back button, closes websock connection and allows user to re-enter username
+    - Error handling
+    - Smooth socket closure
+    - 
+    */
+    const ws = new WebSocket("ws://192.168.1.213:8443", "echo-protocol");
+    ws.onopen = () => { console.log("Connected to WebSocket server."); };
+    ws.onerror = (error) => { console.error("WebSocket Error: ", error); };
+    ws.onclose = () => { console.warn("WebSocket connection closed."); };
+    ws.onmessage = (event) => { console.log("Message from server: ", event.data); };
+
+    function sendUsernameToServer() {
+      const username = document.getElementById("username").value.trim();
+      const inputField = document.getElementById("username");
+      const sendButton = document.getElementById("sendButton");
+      const loadingImg = document.getElementById("loadingImg");
+      const approvalText = document.getElementById("approveText");
+      if (!username) { alert("Please enter a username."); return; }
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(username);
+        console.log("Sent username:", username);
+      } else {
+        alert("WebSocket is not connected. Try again.");
+        return;
+      }
+      inputField.style.display = "none";
+      sendButton.style.display = "none";
+      loadingImg.style.display = "block";
+      approvalText.style.display = "block";
+      sendButton.disabled = true;
+    }
+    window.sendUsernameToServer = sendUsernameToServer;
+    function handleSignIn() {
+      const username = document.getElementById("username").value;
       if (username) {
         if (window.opener) {
           window.opener.postMessage({ name: username }, window.location.origin);
+          ws.close();
           window.close();
         } else {
-          alert('No parent window found.');
+          alert("No parent window found.");
         }
       } else {
-        alert('Please enter your name!');
+        alert("Please enter your name!");
       }
     }
-
-    // Expose the function to the global scope
     window.handleSignIn = handleSignIn;
   </script>
 </body>

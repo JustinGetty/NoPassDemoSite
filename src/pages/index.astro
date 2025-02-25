@@ -18,17 +18,19 @@
 	</head>
 	<body>
 		<h1>Welcome!</h1>
+		<h2 id="welcome-name"></h2>
 		<button onclick="openSignInPopup()">Sign In with swaggy auth</button>
 
+		
 		<script>
+			//goal is to have as little client side code as possible. They will add the popup file to their directory and paste in this js and that's it - hopefully 
 			window.addEventListener('message', function(event) {
-				// Ensure we only accept messages from the same origin
 				if (event.origin !== window.location.origin) return;
 
-				// Only process the message if it has the expected data (i.e. a name property)
 				if (event.data && event.data.name) {
 					console.log('Signed in user:', event.data);
 					alert(`Welcome, ${event.data.name}!`);
+					this.document.getElementById("welcome-name").textContent = event.data.name; 
 				} else {
 					console.log('Received unexpected message:', event.data);
 				}
