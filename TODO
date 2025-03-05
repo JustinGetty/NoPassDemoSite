@@ -1,0 +1,29 @@
+TODO on client side package:
+
+------ SignIn ----
+
+Auth Token Generation:
+- When user enters username, random auth token generated and sent to server with username.
+    This will live on server AND BE SENT BACK with the approved user_id
+
+Error/Failure Handling:
+- self explanatory
+
+Data:
+- our auth window recieves user_id, this will be passed to client site so they can match the user that's signed in
+    with a user in their database
+- site id
+- site api token
+
+
+
+
+
+
+
+----- Signup -----
+- Same as above, except data
+
+Data:
+- user_id
+- passthrough email

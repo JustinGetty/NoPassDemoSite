@@ -2,7 +2,7 @@
 
 ---
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
@@ -11,28 +11,50 @@
 		<meta name="generator" content={Astro.generator} />
 		<title>Demo Site</title>
 		<style>
-			body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
-			button { padding: 10px 20px; background: #4285F4; color: white; border: none; cursor: pointer; border-radius: 4px; }
-			button:hover { background: #357ae8; }
+			body {
+				font-family: Arial, sans-serif;
+				text-align: center;
+				padding: 50px;
+			}
+			button {
+				padding: 10px 20px;
+				background: #4285f4;
+				color: white;
+				border: none;
+				cursor: pointer;
+				border-radius: 4px;
+			}
+			button:hover {
+				background: #357ae8;
+			}
 		</style>
 	</head>
 	<body>
 		<h1>Welcome!</h1>
 		<h2 id="welcome-name"></h2>
+
+		<!-- ONLY THING CLIENT SHOULD HAVE TO IMPLEMENT -->
 		<button onclick="openSignInPopup()">Sign In with swaggy auth</button>
 
-		
 		<script>
-			//goal is to have as little client side code as possible. They will add the popup file to their directory and paste in this js and that's it - hopefully 
-			window.addEventListener('message', function(event) {
+			//goal is to have as little client side code as possible. They will add the popup file to their directory and paste in this js and that's it - hopefully
+
+			/*
+				Client Receives:
+				- user_id if successfull signin
+				- else, nothing
+			*/
+			window.addEventListener("message", function (event) {
 				if (event.origin !== window.location.origin) return;
 
+				//name corresponds with auth window name
 				if (event.data && event.data.name) {
-					console.log('Signed in user:', event.data);
+					console.log("Signed in user:", event.data);
 					alert(`Welcome, ${event.data.name}!`);
-					this.document.getElementById("welcome-name").textContent = event.data.name; 
+					this.document.getElementById("welcome-name").textContent =
+						event.data.name;
 				} else {
-					console.log('Received unexpected message:', event.data);
+					console.log("Received unexpected message:", event.data);
 				}
 			});
 
@@ -43,9 +65,9 @@
 				const top = (screen.height - popupHeight) / 2;
 
 				window.open(
-					'/popup', // This should match your popup route
-					'Sign In',
-					`width=${popupWidth},height=${popupHeight},top=${top},left=${left},resizable=no`
+					"/popup", // This should match your popup route
+					"Sign In",
+					`width=${popupWidth},height=${popupHeight},top=${top},left=${left},resizable=no`,
 				);
 			}
 
