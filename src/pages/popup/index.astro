@@ -1,4 +1,10 @@
 <!doctype html>
+
+<!--
+TODO:
+- WHen user whens to try to sign-in again, make new websocket connection!!!
+-->
+
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -123,13 +129,6 @@
 
     /* Diagonal Design Element */
     .diagonal-element {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 240px;
-      background: linear-gradient(to bottom right, var(--black) 50%, transparent 50%);
-      z-index: -1;
     }
 
     /* Main Content */
@@ -433,9 +432,31 @@
             // Simulate successful login
             setTimeout(handleSignIn, 1500);
           } else if (response.status === "rejected") {
-            document.getElementById("approveText").textContent = "Authentication rejected";
+            document.getElementById("approveText").textContent = "Authentication rejected.";
             showStatus("Authentication was rejected. Please try again.", "error");
             resetForm();
+          } else if (response.status === "wait") {
+            console.log("Previous sign in detected, please wait a moment before attempting new sign in");
+            showStatus("Previous signin detected, please wait a moment before retrying", "error");
+          } else if (response.status === "user_no_exist"){
+            document.getElementById("approveText").textContent = "User doesn't exist.";
+            console.log("User not does exist.");
+            showStatus("User not does exist.", "error");
+            resetForm();
+
+          } else if (response.status === "db_error") {
+            document.getElementById("approveText").textContent = "Server error. Please try again later.";
+            console.log("Server error.");
+            showStatus("Error fetching username.", "error");
+            resetForm();
+
+          } else if (response.status === "invalid_char") {
+            document.getElementById("approveText").textContent = "Invalid characters in username. Allowed: letters, digits, and underscores.";
+            console.log("Invalid character(s) in username.");
+            showStatus("Invalid character(s) in username.", "error");
+            resetForm();
+          } else {
+            console.log(event.data);
           }
         } catch (e) {
           console.error("Error parsing server message:", e);
@@ -477,7 +498,7 @@
           }
         ]
       });
-
+      console.log(payload);
       ws.send(payload);
       console.log("Sent username:", username);
 
