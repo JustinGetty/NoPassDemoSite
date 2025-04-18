@@ -1,14 +1,8 @@
 <!doctype html>
-
-<!--
-TODO:
-- WHen user whens to try to sign-in again, make new websocket connection!!!
--->
-
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Bastion Auth | Sign In</title>
   <style>
     :root {
@@ -20,344 +14,55 @@ TODO:
       --gray-light: #f5f5f7;
       --gray: #e0e0e0;
     }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
-    }
-
-    body {
-      min-height: 100vh;
-      background-color: var(--white);
-      color: var(--black);
-      display: flex;
-      flex-direction: column;
-    }
-
-    /* Modern Top Header Section */
-    .modern-header {
-      background-color: var(--black);
-      display: flex;
-      align-items: center;
-      padding: 18px 32px;
-      position: relative;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-      z-index: 10;
-    }
-
-    .logo-container {
-      display: flex;
-      align-items: center;
-    }
-
-    /* Added styles for the logo image */
-    .logo-container img {
-      width: 40px;
-      height: 40px;
-      object-fit: contain;
-      margin-right: 16px;
-    }
-
-    .logo-badge {
-      width: 40px;
-      height: 40px;
-      background: linear-gradient(135deg, var(--purple) 0%, var(--purple-dark) 100%);
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 8px rgba(154, 131, 192, 0.2);
-      margin-right: 16px;
-      color: var(--white);
-      font-weight: bold;
-      font-size: 16px;
-    }
-
-    .brand-name {
-      color: var(--white);
-      font-size: 20px;
-      font-weight: 600;
-      letter-spacing: -0.5px;
-    }
-
-    .header-actions {
-      margin-left: auto;
-      display: flex;
-      align-items: center;
-    }
-
-    .help-link {
-      color: var(--purple-light);
-      text-decoration: none;
-      font-size: 14px;
-      margin-right: 24px;
-      transition: color 0.2s ease;
-      display: flex;
-      align-items: center;
-    }
-
-    .help-link:hover {
-      color: var(--white);
-    }
-
-    .help-link svg {
-      margin-right: 6px;
-    }
-
-    .back-button {
-      display: flex;
-      align-items: center;
-      padding: 8px 16px;
-      background-color: rgba(255, 255, 255, 0.1);
-      border: none;
-      border-radius: 8px;
-      font-size: 14px;
-      color: var(--white);
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .back-button:hover {
-      background-color: rgba(255, 255, 255, 0.2);
-    }
-
-    .back-button svg {
-      margin-right: 8px;
-    }
-
-    /* Diagonal Design Element */
-    .diagonal-element {
-    }
-
-    /* Main Content */
-    .main-container {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 64px 20px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .welcome-container {
-      text-align: center;
-      margin-bottom: 32px;
-      padding: 20px;
-      background-color: rgba(255, 255, 255, 0.85);
-      border-radius: 16px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      width: 100%;
-      max-width: 450px;
-    }
-
-    .welcome-subtitle {
-      font-size: 16px;
-      color: var(--purple);
-      font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 12px;
-    }
-
-    h1 {
-      font-size: 32px;
-      font-weight: 700;
-      margin-bottom: 12px;
-      color: var(--black);
-    }
-
-    .welcome-description {
-      font-size: 16px;
-      color: #555;
-      max-width: 450px;
-      margin: 0 auto;
-    }
-
-    .signin-form {
-      width: 100%;
-      max-width: 380px;
-      padding: 24px;
-      background-color: var(--white);
-      border-radius: 16px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
-    }
-
-    .form-group {
-      margin-bottom: 24px;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 8px;
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--black);
-    }
-
-    input {
-      width: 100%;
-      padding: 16px;
-      border: 2px solid var(--gray);
-      border-radius: 10px;
-      font-size: 16px;
-      transition: all 0.3s ease;
-      background-color: var(--white);
-      color: var(--black);
-    }
-
-    input:focus {
-      outline: none;
-      border-color: var(--purple);
-      box-shadow: 0 0 0 3px rgba(184, 162, 216, 0.2);
-    }
-
-    button.signin-button {
-      width: 100%;
-      padding: 16px;
-      background: linear-gradient(to right, var(--purple), var(--purple-dark));
-      color: var(--white);
-      border: none;
-      border-radius: 10px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      margin-top: 8px;
-    }
-
-    button.signin-button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 10px rgba(154, 131, 192, 0.3);
-    }
-
-    button.signin-button:disabled {
-      background: var(--gray);
-      cursor: not-allowed;
-      transform: none;
-      box-shadow: none;
-    }
-
-    .status-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-top: 32px;
-    }
-
-    #loadingImg {
-      width: 50px;
-      height: 50px;
-      display: none;
-      animation: rotate 1.5s linear infinite;
-    }
-
-    @keyframes rotate {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-
-    #approveText {
-      font-size: 16px;
-      font-weight: 500;
-      margin-top: 16px;
-      display: none;
-      text-align: center;
-      color: var(--black);
-    }
-
-    .security-badge {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-top: 32px;
-      padding: 12px 16px;
-      background-color: var(--gray-light);
-      border-radius: 8px;
-      width: 100%;
-      max-width: 380px;
-    }
-
-    .security-badge svg {
-      width: 20px;
-      height: 20px;
-      margin-right: 8px;
-    }
-
-    .security-badge span {
-      font-size: 14px;
-      color: var(--black);
-      opacity: 0.7;
-    }
-
-    #statusMessage {
-      margin-top: 16px;
-      padding: 10px;
-      border-radius: 8px;
-      text-align: center;
-      display: none;
-    }
-
-    .status-error {
-      background-color: #ffebee;
-      color: #c62828;
-    }
-
-    .status-success {
-      background-color: #e8f5e9;
-      color: #2e7d32;
-    }
-
-    @media (max-width: 768px) {
-      .modern-header {
-        padding: 16px 20px;
-      }
-
-      .help-link {
-        display: none;
-      }
-
-      .main-container {
-        padding: 48px 20px;
-      }
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter','Segoe UI',Arial,sans-serif; }
+    body { min-height:100vh; background:var(--white); color:var(--black); display:flex; flex-direction:column; }
+    .modern-header { background:var(--black); display:flex; align-items:center; padding:18px 32px; box-shadow:0 4px 12px rgba(0,0,0,0.08); }
+    .logo-container { display:flex; align-items:center; }
+    .logo-container img { width:40px; height:40px; margin-right:16px; }
+    .brand-name { color:var(--white); font-size:20px; font-weight:600; }
+    .header-actions { margin-left:auto; display:flex; align-items:center; }
+    .help-link { color:var(--purple-light); text-decoration:none; margin-right:24px; transition:color .2s; }
+    .help-link:hover { color:var(--white); }
+    .back-button { padding:8px 16px; background:rgba(255,255,255,0.1); border:none; border-radius:8px; color:var(--white); cursor:pointer; }
+    .diagonal-element { }
+    .main-container { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:64px 20px; }
+    .welcome-container { text-align:center; margin-bottom:32px; padding:20px; background:rgba(255,255,255,0.85); border-radius:16px; box-shadow:0 4px 12px rgba(0,0,0,0.1); max-width:450px; width:100%; }
+    .welcome-subtitle { font-size:16px; color:var(--purple); font-weight:500; text-transform:uppercase; letter-spacing:1px; margin-bottom:12px; }
+    h1 { font-size:32px; font-weight:700; margin-bottom:12px; }
+    .welcome-description { font-size:16px; color:#555; max-width:450px; margin:0 auto; }
+    .signin-form { width:100%; max-width:380px; padding:24px; background:var(--white); border-radius:16px; box-shadow:0 8px 20px rgba(0,0,0,0.06); }
+    .form-group { margin-bottom:24px; }
+    label { display:block; margin-bottom:8px; font-size:14px; font-weight:600; }
+    input { width:100%; padding:16px; border:2px solid var(--gray); border-radius:10px; font-size:16px; transition:all .3s; }
+    input:focus { outline:none; border-color:var(--purple); box-shadow:0 0 0 3px rgba(184,162,216,0.2); }
+    button.signin-button { width:100%; padding:16px; background:linear-gradient(to right,var(--purple),var(--purple-dark)); color:var(--white); border:none; border-radius:10px; font-size:16px; font-weight:600; cursor:pointer; transition:all .3s; margin-top:8px; }
+    button.signin-button:hover { transform:translateY(-2px); box-shadow:0 4px 10px rgba(154,131,192,0.3); }
+    #loadingImg { width:50px; height:50px; display:none; animation:rotate 1.5s linear infinite; }
+    @keyframes rotate { from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
+    #approveText { font-size:16px; font-weight:500; margin-top:16px; display:none; text-align:center; }
+    .status-container { display:flex; flex-direction:column; align-items:center; margin-top:32px; }
+    #statusMessage { margin-top:16px; padding:10px; border-radius:8px; text-align:center; display:none; }
+    .status-error { background:#ffebee; color:#c62828; }
+    .status-success { background:#e8f5e9; color:#2e7d32; }
+    @media(max-width:768px){
+      .modern-header { padding:16px 20px; }
+      .help-link { display:none; }
+      .main-container { padding:48px 20px; }
     }
   </style>
 </head>
 <body>
-<!-- Modern Navbar/Header -->
 <header class="modern-header">
   <div class="logo-container">
     <img src="public/bastion-char-purple.svg" alt="BastionLogo">
     <span class="brand-name">Bastion Auth</span>
   </div>
-
   <div class="header-actions">
-    <a href="#" class="help-link">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10"></circle>
-        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-        <line x1="12" y1="17" x2="12.01" y2="17"></line>
-      </svg>
-      Help Center
-    </a>
-
-    <button class="back-button" onclick="goBack()">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M19 12H5"></path>
-        <path d="M12 19l-7-7 7-7"></path>
-      </svg>
-      Back
-    </button>
+    <a href="#" class="help-link">Help Center</a>
+    <button class="back-button" onclick="goBack()">Back</button>
   </div>
 </header>
 
-<!-- Diagonal Background Element -->
-<div class="diagonal-element"></div>
-
-<!-- Main Content -->
 <main class="main-container">
   <div class="welcome-container">
     <p class="welcome-subtitle">Authentication</p>
@@ -366,215 +71,180 @@ TODO:
   </div>
 
   <div class="signin-form">
-    <div class="form-group">
+    <div class="form-group" id="usernameContainer">
       <label for="username">Username</label>
-      <input type="text" id="username" placeholder="Enter your username" />
+      <input type="text" id="username" placeholder="Enter your username"/>
     </div>
 
-    <button id="sendButton" class="signin-button" onclick="sendUsernameToServer()">Sign In</button>
+    <div class="form-group" id="otpContainer" style="display:none;">
+      <label for="otp">One-Time Code</label>
+      <input type="text" id="otp" placeholder="Enter the code you received"/>
+      <button type="button" class="signin-button" onclick="sendOTPToServer()">Verify Code</button>
+    </div>
+
+    <button type="button" id="sendButton" class="signin-button" onclick="sendUsernameToServer()">Sign In</button>
 
     <div class="status-container">
-      <svg id="loadingImg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="12" cy="12" r="10" stroke="#b8a2d8" stroke-width="4" fill="none" stroke-dasharray="62.83" stroke-linecap="round" />
+      <svg id="loadingImg" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="10" stroke="#b8a2d8" stroke-width="4" fill="none" stroke-dasharray="62.83" stroke-linecap="round"/>
       </svg>
       <p id="approveText">Please approve the authentication request on your mobile device</p>
       <div id="statusMessage"></div>
     </div>
   </div>
-
-  <div class="security-badge">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-      <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-    </svg>
-    <span>Secure authentication powered by Bastion</span>
-  </div>
 </main>
 
 <script>
-  let ws = null;
-  const wsServer = "ws://192.168.1.213:8443";
-  const wsProtocol = "echo-protocol";
+  // CONFIG
+  const CLIENT_ID = "your-spa-id",
+      WS_URL    = "ws://192.168.1.213:8443",
+      WS_PROTO  = "echo-protocol";
+  let ws, transactionId;
 
-  // Initialize connection when page loads
-  window.addEventListener('load', initializeWebSocket);
-
-  function initializeWebSocket() {
-    try {
-      ws = new WebSocket(wsServer, wsProtocol);
-
-      ws.onopen = () => {
-        console.log("Connected to WebSocket server.");
-        showStatus("Connected to authentication server", "success");
-      };
-
-      ws.onerror = (error) => {
-        console.error("WebSocket Error: ", error);
-        showStatus("Connection error. Please try again later.", "error");
-      };
-
-      ws.onclose = () => {
-        console.warn("WebSocket connection closed.");
-        showStatus("Connection closed. Trying to reconnect...", "error");
-        // Try to reconnect after 3 seconds
-        setTimeout(initializeWebSocket, 3000);
-      };
-
-      ws.onmessage = (event) => {
-        console.log("Message from server: ", event.data);
-        try {
-          const response = JSON.parse(event.data);
-
-          if (response.status === "approved") {
-            document.getElementById("approveText").textContent = "Authentication approved!";
-            showStatus("Authentication successful!", "success");
-
-            // Simulate successful login
-            setTimeout(handleSignIn, 1500);
-          } else if (response.status === "rejected") {
-            document.getElementById("approveText").textContent = "Authentication rejected.";
-            showStatus("Authentication was rejected. Please try again.", "error");
-            resetForm();
-          } else if (response.status === "wait") {
-            console.log("Previous sign in detected, please wait a moment before attempting new sign in");
-            showStatus("Previous signin detected, please wait a moment before retrying", "error");
-          } else if (response.status === "user_no_exist"){
-            document.getElementById("approveText").textContent = "User doesn't exist.";
-            console.log("User not does exist.");
-            showStatus("User not does exist.", "error");
-            resetForm();
-
-          } else if (response.status === "db_error") {
-            document.getElementById("approveText").textContent = "Server error. Please try again later.";
-            console.log("Server error.");
-            showStatus("Error fetching username.", "error");
-            resetForm();
-
-          } else if (response.status === "invalid_char") {
-            document.getElementById("approveText").textContent = "Invalid characters in username. Allowed: letters, digits, and underscores.";
-            console.log("Invalid character(s) in username.");
-            showStatus("Invalid character(s) in username.", "error");
-            resetForm();
-          } else {
-            console.log(event.data);
-          }
-        } catch (e) {
-          console.error("Error parsing server message:", e);
-        }
-      };
-    } catch (error) {
-      console.error("Failed to initialize WebSocket:", error);
-      showStatus("Failed to connect to authentication server", "error");
+  // FALLBACK LOADER
+  async function loadSha256Fallback(){
+    if (typeof sha256!=='function') {
+      try {
+        const res = await fetch('https://cdn.jsdelivr.net/npm/js-sha256@0.9.0/build/sha256.min.js');
+        const code = await res.text();
+        eval(code);
+        console.log('✅ loaded js‑sha256 fallback');
+      } catch(e){
+        console.error('❌ failed to load sha256 fallback', e);
+      }
     }
   }
 
-  function sendUsernameToServer() {
-    const username = document.getElementById("username").value.trim();
-    const inputField = document.getElementById("username");
-    const sendButton = document.getElementById("sendButton");
-    const loadingImg = document.getElementById("loadingImg");
-    const approvalText = document.getElementById("approveText");
-    const statusMsg = document.getElementById("statusMessage");
-
-    if (!username) {
-      showStatus("Please enter a username", "error");
-      return;
-    }
-
-    // Check connection and reconnect if needed
-    if (!ws || ws.readyState !== WebSocket.OPEN) {
-      showStatus("Reconnecting to server...", "error");
-      initializeWebSocket();
-      setTimeout(() => sendUsernameToServer(), 1000); // Try again in 1 second
-      return;
-    }
-
-    try {
-      let payload = JSON.stringify({
-        signin: [
-          {
-            username: username,
-            authtoken: "123456"
-          }
-        ]
-      });
-      console.log(payload);
-      ws.send(payload);
-      console.log("Sent username:", username);
-
-      inputField.parentElement.style.display = "none";
-      sendButton.style.display = "none";
-      loadingImg.style.display = "block";
-      approvalText.style.display = "block";
-      statusMsg.style.display = "none";
-      sendButton.disabled = true;
-    } catch (error) {
-      console.error("Error sending data:", error);
-      showStatus("Failed to send authentication request", "error");
-    }
+  // PKCE HELPERS
+  function generateRandomString(len){
+    const arr = new Uint8Array(len);
+    (window.crypto||window.msCrypto)?.getRandomValues(arr);
+    return Array.from(arr).map(b=>('0'+b.toString(16)).slice(-2)).join('');
   }
+
+  async function generatePKCE(){
+    const verifier = generateRandomString(64);
+    const subtle   = window.crypto?.subtle || window.msCrypto?.subtle;
+    if(subtle){
+      const data = new TextEncoder().encode(verifier);
+      const hash = await subtle.digest('SHA-256', data);
+      const b64  = btoa(String.fromCharCode(...new Uint8Array(hash)));
+      return b64.replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+    }
+    await loadSha256Fallback();
+    if(typeof sha256==='function'){
+      const buf = sha256.arrayBuffer
+          ? await sha256.arrayBuffer(verifier)
+          : new Uint8Array(sha256.array(verifier)).buffer;
+      const b64 = btoa(String.fromCharCode(...new Uint8Array(buf)));
+      return b64.replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+    }
+    throw new Error('PKCE: no crypto available');
+  }
+
+  // WEBSOCKET
+  window.addEventListener('load', initWS);
+  function initWS(){
+    ws = new WebSocket(WS_URL, WS_PROTO);
+    ws.onopen    = ()=>showStatus('Connected to authentication server','success');
+    ws.onerror   = e=>showStatus('Connection error. Please try again.','error');
+    ws.onclose   = ()=>setTimeout(initWS,3000);
+    ws.onmessage = async evt=>{
+      let resp;
+      try{ resp=JSON.parse(evt.data); }catch{ return; }
+      if(resp.action==='signin_started'){
+        transactionId = resp.transaction_id;
+        document.getElementById('loadingImg').style.display='none';
+        document.getElementById('otpContainer').style.display='block';
+        document.getElementById('approveText').style.display='block';
+        document.getElementById('approveText').textContent='Enter the code sent to your device';
+        return;
+      }
+      switch(resp.status){
+        case 'approved':  showStatus('Authentication successful!','success'); return setTimeout(handleSignIn,1500);
+        case 'rejected':  showStatus('Authentication was rejected.','error'); return resetForm();
+        case 'user_no_exist': showStatus('User does not exist.','error'); return resetForm();
+        case 'db_error':  showStatus('Server error.','error'); return resetForm();
+        case 'invalid_char': showStatus('Invalid username characters.','error'); return resetForm();
+      }
+    };
+  }
+
+  // START SIGNIN
+  async function sendUsernameToServer(){
+    const u = document.getElementById('username').value.trim();
+    if(!u) return showStatus('Please enter a username','error');
+    if(!ws || ws.readyState!==WebSocket.OPEN){
+      showStatus('Reconnecting…','error');
+      initWS();
+      return setTimeout(sendUsernameToServer,1000);
+    }
+    let state, challenge;
+    try{
+      state     = generateRandomString(16);
+      challenge = await generatePKCE();
+    }catch(e){
+      return showStatus('Crypto error—cannot start sign‑in','error');
+    }
+    ws.send(JSON.stringify({
+      action:                'start_signin',
+      client_id:             CLIENT_ID,
+      username:              u,
+      code_challenge:        challenge,
+      code_challenge_method: 'S256',
+      state
+    }));
+    document.getElementById('usernameContainer').style.display='none';
+    document.getElementById('sendButton').style.display='none';
+    document.getElementById('loadingImg').style.display='block';
+    document.getElementById('approveText').style.display='block';
+    document.getElementById('statusMessage').style.display='none';
+  }
+
+  // VERIFY OTP
+  function sendOTPToServer(){
+    const code = document.getElementById('otp').value.trim();
+    if(!code) return showStatus('Please enter the code','error');
+    ws.send(JSON.stringify({ action:'verify_otp', transaction_id:transactionId, otp:code }));
+    document.getElementById('otpContainer').style.display='none';
+    document.getElementById('loadingImg').style.display='block';
+    document.getElementById('approveText').textContent='Verifying code…';
+  }
+
+  // ON SUCCESS
+  function handleSignIn(){
+    const u = document.getElementById('username').value.trim();
+    if(window.opener){
+      window.opener.postMessage({name:u},window.location.origin);
+      ws.close();
+      return window.close();
+    }
+    showStatus('Welcome, '+u+'!','success');
+    setTimeout(resetForm,3000);
+  }
+
+  // RESET
+  function resetForm(){
+    ['usernameContainer','sendButton','statusMessage'].forEach(id=>document.getElementById(id).style.display='block');
+    ['otpContainer','loadingImg','approveText'].forEach(id=>document.getElementById(id).style.display='none');
+    document.getElementById('username').value='';
+    document.getElementById('otp').value='';
+    document.getElementById('username').focus();
+  }
+
+  // STATUS
+  function showStatus(msg,type){
+    const el = document.getElementById('statusMessage');
+    el.textContent = msg;
+    el.className   = type==='error'?'status-error':'status-success';
+    el.style.display='block';
+    if(type!=='error') setTimeout(()=>el.style.display='none',5000);
+  }
+
+  function goBack(){ if(window.opener) window.close(); else window.history.back(); }
 
   window.sendUsernameToServer = sendUsernameToServer;
-
-  function handleSignIn() {
-    const username = document.getElementById("username").value;
-    if (username) {
-      if (window.opener) {
-        // Send user id back to client
-        window.opener.postMessage(
-            { name: username },
-            window.location.origin
-        );
-
-        if (ws && ws.readyState === WebSocket.OPEN) {
-          ws.close();
-        }
-        window.close();
-      } else {
-        showStatus("Authentication successful! Welcome " + username, "success");
-        // Since we can't close the window (no opener), just reset the form
-        setTimeout(resetForm, 3000);
-      }
-    } else {
-      showStatus("Please enter your name!", "error");
-    }
-  }
-
-  function resetForm() {
-    const inputField = document.getElementById("username");
-    const sendButton = document.getElementById("sendButton");
-    const loadingImg = document.getElementById("loadingImg");
-    const approvalText = document.getElementById("approveText");
-
-    inputField.parentElement.style.display = "block";
-    sendButton.style.display = "block";
-    loadingImg.style.display = "none";
-    approvalText.style.display = "none";
-    sendButton.disabled = false;
-    inputField.value = "";
-    inputField.focus();
-  }
-
-  function showStatus(message, type) {
-    const statusElement = document.getElementById("statusMessage");
-    statusElement.textContent = message;
-    statusElement.className = type === "error" ? "status-error" : "status-success";
-    statusElement.style.display = "block";
-
-    if (type !== "error") {
-      setTimeout(() => {
-        statusElement.style.display = "none";
-      }, 5000);
-    }
-  }
-
-  function goBack() {
-    if (window.opener) {
-      window.close();
-    } else {
-      window.history.back();
-    }
-  }
+  window.sendOTPToServer      = sendOTPToServer;
 </script>
 </body>
 </html>
