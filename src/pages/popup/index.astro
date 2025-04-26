@@ -1,250 +1,195 @@
+<!-- index.html -->
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bastion Auth | Sign In</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/js-sha256@0.9.0/build/sha256.min.js"></script>
   <style>
-    :root {
-      --black: #121416;
-      --white: #ffffff;
-      --purple: #211c84;
-      --purple-light: #2b24ab;
-      --purple-dark: #9a83c0;
-      --gray-light: #f5f5f7;
-      --gray: #e0e0e0;
+    #waitingScreen {
+      display: none;
+      margin-top: 20px;
+      text-align: center;
     }
-    * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter','Segoe UI',Arial,sans-serif; }
-    body { min-height:100vh; background:var(--white); color:var(--black); display:flex; flex-direction:column; }
-    .modern-header { background:var(--black); display:flex; align-items:center; padding:18px 32px; box-shadow:0 4px 12px rgba(0,0,0,0.08); }
-    .logo-container { display:flex; align-items:center; }
-    .logo-container img { width:40px; height:40px; margin-right:16px; }
-    .brand-name { color:var(--white); font-size:20px; font-weight:600; }
-    .header-actions { margin-left:auto; display:flex; align-items:center; }
-    .help-link { color:var(--purple-light); text-decoration:none; margin-right:24px; transition:color .2s; }
-    .help-link:hover { color:var(--white); }
-    .back-button { padding:8px 16px; background:rgba(255,255,255,0.1); border:none; border-radius:8px; color:var(--white); cursor:pointer; }
-    .diagonal-element { }
-    .main-container { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:64px 20px; }
-    .welcome-container { text-align:center; margin-bottom:32px; padding:20px; background:rgba(255,255,255,0.85); border-radius:16px; box-shadow:0 4px 12px rgba(0,0,0,0.1); max-width:450px; width:100%; }
-    .welcome-subtitle { font-size:16px; color:var(--purple); font-weight:500; text-transform:uppercase; letter-spacing:1px; margin-bottom:12px; }
-    h1 { font-size:32px; font-weight:700; margin-bottom:12px; }
-    .welcome-description { font-size:16px; color:#555; max-width:450px; margin:0 auto; }
-    .signin-form { width:100%; max-width:380px; padding:24px; background:var(--white); border-radius:16px; box-shadow:0 8px 20px rgba(0,0,0,0.06); }
-    .form-group { margin-bottom:24px; }
-    label { display:block; margin-bottom:8px; font-size:14px; font-weight:600; }
-    input { width:100%; padding:16px; border:2px solid var(--gray); border-radius:10px; font-size:16px; transition:all .3s; }
-    input:focus { outline:none; border-color:var(--purple); box-shadow:0 0 0 3px rgba(184,162,216,0.2); }
-    button.signin-button { width:100%; padding:16px; background:linear-gradient(to right,var(--purple),var(--purple-dark)); color:var(--white); border:none; border-radius:10px; font-size:16px; font-weight:600; cursor:pointer; transition:all .3s; margin-top:8px; }
-    button.signin-button:hover { transform:translateY(-2px); box-shadow:0 4px 10px rgba(154,131,192,0.3); }
-    #loadingImg { width:50px; height:50px; display:none; animation:rotate 1.5s linear infinite; }
-    @keyframes rotate { from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
-    #approveText { font-size:16px; font-weight:500; margin-top:16px; display:none; text-align:center; }
-    .status-container { display:flex; flex-direction:column; align-items:center; margin-top:32px; }
-    #statusMessage { margin-top:16px; padding:10px; border-radius:8px; text-align:center; display:none; }
-    .status-error { background:#ffebee; color:#c62828; }
-    .status-success { background:#e8f5e9; color:#2e7d32; }
-    @media(max-width:768px){
-      .modern-header { padding:16px 20px; }
-      .help-link { display:none; }
-      .main-container { padding:48px 20px; }
+    #waitingScreen svg {
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
     }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    #approveText { font-size: 16px; margin-top: 10px; color: var(--black); }
   </style>
 </head>
 <body>
-<header class="modern-header">
-  <div class="logo-container">
-    <img src="public/bastion-char-purple.svg" alt="BastionLogo">
-    <span class="brand-name">Bastion Auth</span>
-  </div>
-  <div class="header-actions">
-    <a href="#" class="help-link">Help Center</a>
-    <button class="back-button" onclick="goBack()">Back</button>
-  </div>
-</header>
+  <header class="modern-header">
+    <div class="logo-container">
+      <img src="public/bastion-char-purple.svg" alt="BastionLogo">
+      <span class="brand-name">Bastion Auth</span>
+    </div>
+    <div class="header-actions">
+      <button class="back-button" id="backButton">Back</button>
+    </div>
+  </header>
 
-<main class="main-container">
-  <div class="welcome-container">
-    <p class="welcome-subtitle">Authentication</p>
-    <h1>Welcome back</h1>
-    <p class="welcome-description">Sign in securely using your credentials to access your account and devices.</p>
-  </div>
-
-  <div class="signin-form">
-    <div class="form-group" id="usernameContainer">
-      <label for="username">Username</label>
-      <input type="text" id="username" placeholder="Enter your username"/>
+  <main class="main-container">
+    <div class="welcome-container">
+      <p class="welcome-subtitle">Authentication</p>
+      <h1>Welcome back</h1>
+      <p class="welcome-description">Sign in securely using your credentials to access your account and devices.</p>
     </div>
 
-    <div class="form-group" id="otpContainer" style="display:none;">
-      <label for="otp">One-Time Code</label>
-      <input type="text" id="otp" placeholder="Enter the code you received"/>
-      <button type="button" class="signin-button" onclick="sendOTPToServer()">Verify Code</button>
-    </div>
+    <div class="signin-form">
+      <div class="form-group" id="usernameContainer">
+        <label for="username">Username</label>
+        <input type="text" id="username" placeholder="Enter your username">
+      </div>
 
-    <button type="button" id="sendButton" class="signin-button" onclick="sendUsernameToServer()">Sign In</button>
+      <button type="button" id="sendButton" class="signin-button">Sign In</button>
 
-    <div class="status-container">
-      <svg id="loadingImg" viewBox="0 0 24 24">
-        <circle cx="12" cy="12" r="10" stroke="#b8a2d8" stroke-width="4" fill="none" stroke-dasharray="62.83" stroke-linecap="round"/>
-      </svg>
-      <p id="approveText">Please approve the authentication request on your mobile device</p>
+      <div id="waitingScreen">
+        <svg viewBox="0 0 50 50">
+          <circle cx="25" cy="25" r="20" stroke="var(--purple)" stroke-width="4" fill="none" stroke-dasharray="31.4 31.4" stroke-linecap="round"></circle>
+        </svg>
+        <p id="approveText">Waiting for approval on your mobile device...</p>
+      </div>
+
       <div id="statusMessage"></div>
     </div>
-  </div>
-</main>
+  </main>
 
-<script>
-  // CONFIG
-  const CLIENT_ID = "your-spa-id",
-      WS_URL    = "ws://192.168.1.213:8443",
-      WS_PROTO  = "echo-protocol";
-  let ws, transactionId;
+  <script>
+    const CLIENT_ID = "test_site_1_spa_id";
+    const WS_URL    = "ws://192.168.1.213:8443";
+    const WS_PROTO  = "echo-protocol";
+    let ws = null;
+    let transactionId = null;
+    let codeVerifier = null;
+    let currentState = null;
 
-  // FALLBACK LOADER
-  async function loadSha256Fallback(){
-    if (typeof sha256!=='function') {
+    function generateRandomString(len) {
+      const arr = new Uint8Array(len);
+      crypto.getRandomValues(arr);
+      return Array.from(arr).map(b => ('0' + b.toString(16)).slice(-2)).join('');
+    }
+
+    async function generatePKCE() {
+      codeVerifier = generateRandomString(64);
+      const hashBytes = sha256.arrayBuffer
+        ? await sha256.arrayBuffer(codeVerifier)
+        : new Uint8Array(sha256.array(codeVerifier)).buffer;
+      const b64 = btoa(String.fromCharCode(...new Uint8Array(hashBytes)));
+      return b64.replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+    }
+
+    function initWS() {
+      if (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) return;
+      ws = new WebSocket(WS_URL, WS_PROTO);
+      ws.binaryType = 'arraybuffer';
+      ws.onopen = () => console.log('WebSocket connected');
+      ws.onerror = err => console.error('WebSocket error', err);
+      ws.onclose = () => setTimeout(initWS, 3000);
+      ws.onmessage = async evt => {
+        let text;
+        if (evt.data instanceof Blob) text = await evt.data.text();
+        else if (evt.data instanceof ArrayBuffer) text = new TextDecoder().decode(evt.data);
+        else text = evt.data;
+
+        console.log('WS msg:', text);
+        let msg;
+        try { msg = JSON.parse(text); } catch { return; }
+
+        if (msg.action === 'signin_started') {
+          transactionId = msg.transaction_id;
+          currentState = msg.state;
+          showWaitingScreen();
+          return;
+        }
+        if (msg.action === 'og_challenge_code_req') {
+          ws.send(JSON.stringify({
+            action: 'og_challenge_code_res',
+            transaction_id: transactionId,
+            code_verifier: codeVerifier,
+            state: currentState
+          }));
+          return;
+        }
+
+        switch (msg.status) {
+          case 'invalid':
+            resetAll();
+            showStatus(msg.error || 'Uh Oh, INVALID AHHHH', 'error');
+            return;
+          case 'invalid_char':
+            resetAll();
+            showStatus(msg.error || 'Invalid Character(s) or Username Too Short', 'error');
+            return;
+          case 'db_error':
+            resetAll();
+            showStatus(msg.error || 'Server Error. Please try again later.', 'error');
+            return;
+          case 'user_no_exist':
+            resetAll();
+            showStatus(msg.error || 'User Does Not Exist', 'error');
+            return;
+          case 'approved':
+            showStatus('Authentication successful!', 'success');
+            resetAll();
+            return;
+          case 'rejected':
+            showStatus('Authentication rejected.', 'error');
+            resetAll();
+            return;
+          default:
+            return;
+        }
+      };
+    }
+
+    async function sendUsernameToServer() {
+      const user = document.getElementById('username').value.trim();
+      if (!user) { showStatus('Please enter a username', 'error'); return; }
+      if (!ws || ws.readyState !== WebSocket.OPEN) {
+        initWS(); setTimeout(sendUsernameToServer, 500); return;
+      }
+      const state = generateRandomString(16);
+      let challenge;
       try {
-        const res = await fetch('https://cdn.jsdelivr.net/npm/js-sha256@0.9.0/build/sha256.min.js');
-        const code = await res.text();
-        eval(code);
-        console.log('✅ loaded js‑sha256 fallback');
-      } catch(e){
-        console.error('❌ failed to load sha256 fallback', e);
+        challenge = await generatePKCE();
+      } catch (e) {
+        showStatus('Crypto error', 'error'); return;
       }
+      ws.send(JSON.stringify({ action: 'start_signin', client_id: CLIENT_ID, username: user, code_challenge: challenge, code_challenge_method: 'S256', state }));
+      console.log('Sent start_signin');
+      showWaitingScreen();
     }
-  }
 
-  // PKCE HELPERS
-  function generateRandomString(len){
-    const arr = new Uint8Array(len);
-    (window.crypto||window.msCrypto)?.getRandomValues(arr);
-    return Array.from(arr).map(b=>('0'+b.toString(16)).slice(-2)).join('');
-  }
-
-  async function generatePKCE(){
-    const verifier = generateRandomString(64);
-    const subtle   = window.crypto?.subtle || window.msCrypto?.subtle;
-    if(subtle){
-      const data = new TextEncoder().encode(verifier);
-      const hash = await subtle.digest('SHA-256', data);
-      const b64  = btoa(String.fromCharCode(...new Uint8Array(hash)));
-      return b64.replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+    function showWaitingScreen() {
+      document.getElementById('usernameContainer').style.display = 'none';
+      document.getElementById('sendButton').style.display = 'none';
+      document.getElementById('waitingScreen').style.display = 'flex';
     }
-    await loadSha256Fallback();
-    if(typeof sha256==='function'){
-      const buf = sha256.arrayBuffer
-          ? await sha256.arrayBuffer(verifier)
-          : new Uint8Array(sha256.array(verifier)).buffer;
-      const b64 = btoa(String.fromCharCode(...new Uint8Array(buf)));
-      return b64.replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+
+    function resetAll() {
+      if (ws) { ws.close(); ws = null; }
+      document.getElementById('usernameContainer').style.display = 'block';
+      document.getElementById('sendButton').style.display = 'block';
+      document.getElementById('waitingScreen').style.display = 'none';
+      document.getElementById('statusMessage').style.display = 'none';
     }
-    throw new Error('PKCE: no crypto available');
-  }
 
-  // WEBSOCKET
-  window.addEventListener('load', initWS);
-  function initWS(){
-    ws = new WebSocket(WS_URL, WS_PROTO);
-    ws.onopen    = ()=>showStatus('Connected to authentication server','success');
-    ws.onerror   = e=>showStatus('Connection error. Please try again.','error');
-    ws.onclose   = ()=>setTimeout(initWS,3000);
-    ws.onmessage = async evt=>{
-      let resp;
-      try{ resp=JSON.parse(evt.data); }catch{ return; }
-      if(resp.action==='signin_started'){
-        transactionId = resp.transaction_id;
-        document.getElementById('loadingImg').style.display='none';
-        document.getElementById('otpContainer').style.display='block';
-        document.getElementById('approveText').style.display='block';
-        document.getElementById('approveText').textContent='Enter the code sent to your device';
-        return;
-      }
-      switch(resp.status){
-        case 'approved':  showStatus('Authentication successful!','success'); return setTimeout(handleSignIn,1500);
-        case 'rejected':  showStatus('Authentication was rejected.','error'); return resetForm();
-        case 'user_no_exist': showStatus('User does not exist.','error'); return resetForm();
-        case 'db_error':  showStatus('Server error.','error'); return resetForm();
-        case 'invalid_char': showStatus('Invalid username characters.','error'); return resetForm();
-      }
-    };
-  }
-
-  // START SIGNIN
-  async function sendUsernameToServer(){
-    const u = document.getElementById('username').value.trim();
-    if(!u) return showStatus('Please enter a username','error');
-    if(!ws || ws.readyState!==WebSocket.OPEN){
-      showStatus('Reconnecting…','error');
-      initWS();
-      return setTimeout(sendUsernameToServer,1000);
+    function showStatus(msg, type) {
+      const el = document.getElementById('statusMessage');
+      el.textContent = msg;
+      el.className = type === 'error' ? 'status-error' : 'status-success';
+      el.style.display = 'block';
+      setTimeout(() => el.style.display = 'none', 3000);
     }
-    let state, challenge;
-    try{
-      state     = generateRandomString(16);
-      challenge = await generatePKCE();
-    }catch(e){
-      return showStatus('Crypto error—cannot start sign‑in','error');
-    }
-    ws.send(JSON.stringify({
-      action:                'start_signin',
-      client_id:             CLIENT_ID,
-      username:              u,
-      code_challenge:        challenge,
-      code_challenge_method: 'S256',
-      state
-    }));
-    document.getElementById('usernameContainer').style.display='none';
-    document.getElementById('sendButton').style.display='none';
-    document.getElementById('loadingImg').style.display='block';
-    document.getElementById('approveText').style.display='block';
-    document.getElementById('statusMessage').style.display='none';
-  }
 
-  // VERIFY OTP
-  function sendOTPToServer(){
-    const code = document.getElementById('otp').value.trim();
-    if(!code) return showStatus('Please enter the code','error');
-    ws.send(JSON.stringify({ action:'verify_otp', transaction_id:transactionId, otp:code }));
-    document.getElementById('otpContainer').style.display='none';
-    document.getElementById('loadingImg').style.display='block';
-    document.getElementById('approveText').textContent='Verifying code…';
-  }
-
-  // ON SUCCESS
-  function handleSignIn(){
-    const u = document.getElementById('username').value.trim();
-    if(window.opener){
-      window.opener.postMessage({name:u},window.location.origin);
-      ws.close();
-      return window.close();
-    }
-    showStatus('Welcome, '+u+'!','success');
-    setTimeout(resetForm,3000);
-  }
-
-  // RESET
-  function resetForm(){
-    ['usernameContainer','sendButton','statusMessage'].forEach(id=>document.getElementById(id).style.display='block');
-    ['otpContainer','loadingImg','approveText'].forEach(id=>document.getElementById(id).style.display='none');
-    document.getElementById('username').value='';
-    document.getElementById('otp').value='';
-    document.getElementById('username').focus();
-  }
-
-  // STATUS
-  function showStatus(msg,type){
-    const el = document.getElementById('statusMessage');
-    el.textContent = msg;
-    el.className   = type==='error'?'status-error':'status-success';
-    el.style.display='block';
-    if(type!=='error') setTimeout(()=>el.style.display='none',5000);
-  }
-
-  function goBack(){ if(window.opener) window.close(); else window.history.back(); }
-
-  window.sendUsernameToServer = sendUsernameToServer;
-  window.sendOTPToServer      = sendOTPToServer;
-</script>
+    document.getElementById('backButton').onclick = resetAll;
+    document.getElementById('sendButton').onclick = sendUsernameToServer;
+    window.addEventListener('load', initWS);
+  </script>
 </body>
 </html>

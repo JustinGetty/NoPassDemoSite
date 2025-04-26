@@ -1,0 +1,232 @@
+:root {
+    --black: #121416;
+    --white: #ffffff;
+    --purple: #211c84;
+    --purple-light: #2b24ab;
+    --purple-dark: #9a83c0;
+    --gray-light: #f5f5f7;
+    --gray: #e0e0e0;
+  }
+  
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+  }
+  
+  body {
+    min-height: 100vh;
+    background-color: var(--white);
+    color: var(--black);
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .modern-header {
+    background-color: var(--black);
+    display: flex;
+    align-items: center;
+    padding: 18px 32px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+  
+  .logo-container {
+    display: flex;
+    align-items: center;
+  }
+  
+  .logo-container img {
+    width: 40px;
+    height: 40px;
+    margin-right: 16px;
+  }
+  
+  .brand-name {
+    color: var(--white);
+    font-size: 20px;
+    font-weight: 600;
+  }
+  
+  .header-actions {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+  }
+  
+  .help-link {
+    color: var(--purple-light);
+    text-decoration: none;
+    margin-right: 24px;
+    transition: color 0.2s ease;
+  }
+  
+  .help-link:hover {
+    color: var(--white);
+  }
+  
+  .back-button {
+    padding: 8px 16px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 8px;
+    color: var(--white);
+    cursor: pointer;
+  }
+  
+  .diagonal-element {
+  }
+  
+  .main-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 64px 20px;
+  }
+  
+  .welcome-container {
+    text-align: center;
+    margin-bottom: 32px;
+    padding: 20px;
+    background-color: rgba(255, 255, 255, 0.85);
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    max-width: 450px;
+    width: 100%;
+  }
+  
+  .welcome-subtitle {
+    font-size: 16px;
+    color: var(--purple);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+  }
+  
+  h1 {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  
+  .welcome-description {
+    font-size: 16px;
+    color: #555;
+    max-width: 450px;
+    margin: 0 auto;
+  }
+  
+  .signin-form {
+    width: 100%;
+    max-width: 380px;
+    padding: 24px;
+    background-color: var(--white);
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+  }
+  
+  .form-group {
+    margin-bottom: 24px;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  
+  input {
+    width: 100%;
+    padding: 16px;
+    border: 2px solid var(--gray);
+    border-radius: 10px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+  }
+  
+  input:focus {
+    outline: none;
+    border-color: var(--purple);
+    box-shadow: 0 0 0 3px rgba(184, 162, 216, 0.2);
+  }
+  
+  button.signin-button {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(to right, var(--purple), var(--purple-dark));
+    color: var(--white);
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 8px;
+  }
+  
+  button.signin-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(154, 131, 192, 0.3);
+  }
+  
+  #loadingImg {
+    width: 50px;
+    height: 50px;
+    display: none;
+    animation: rotate 1.5s linear infinite;
+  }
+  
+  @keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  
+  #approveText {
+    font-size: 16px;
+    font-weight: 500;
+    margin-top: 16px;
+    display: none;
+    text-align: center;
+  }
+  
+  .status-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 32px;
+  }
+  
+  #statusMessage {
+    margin-top: 16px;
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
+    display: none;
+  }
+  
+  .status-error {
+    background-color: #ffebee;
+    color: #c62828;
+  }
+  
+  .status-success {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+  }
+  
+  @media(max-width: 768px) {
+    .modern-header {
+      padding: 16px 20px;
+    }
+    .help-link {
+      display: none;
+    }
+    .main-container {
+      padding: 48px 20px;
+    }
+  }
+  
