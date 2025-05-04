@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="styles.css">
   <script src="https://cdn.jsdelivr.net/npm/js-sha256@0.9.0/build/sha256.min.js"></script>
   <style>
+    /* ---------- Existing styles ---------- */
     #waitingScreen {
       display: none;
       margin-top: 20px;
@@ -14,14 +15,14 @@
       align-items: center;
       flex-direction: column;
     }
-    
+
     .shield-container {
       position: relative;
       width: 60px;
       height: 60px;
       margin-bottom: 10px;
     }
-    
+
     .shield {
       position: absolute;
       top: 0;
@@ -31,7 +32,7 @@
       fill: var(--purple);
       animation: float 3s ease-in-out infinite;
     }
-    
+
     .shield-pulse {
       position: absolute;
       top: 0;
@@ -43,7 +44,7 @@
       transform-origin: center;
       animation: pulse 2s ease-in-out infinite;
     }
-    
+
     .checkmark {
       position: absolute;
       top: 50%;
@@ -57,13 +58,13 @@
       stroke-dashoffset: 100;
       animation: dash 1.5s ease-in-out infinite alternate;
     }
-    
+
     .dots {
       display: flex;
       justify-content: center;
       margin: 10px 0;
     }
-    
+
     .dot {
       width: 8px;
       height: 8px;
@@ -72,71 +73,74 @@
       background-color: var(--purple);
       animation: dot-fade 1.5s ease-in-out infinite;
     }
-    
-    .dot:nth-child(2) {
-      animation-delay: 0.5s;
-    }
-    
-    .dot:nth-child(3) {
-      animation-delay: 1s;
-    }
-    
+
+    .dot:nth-child(2) { animation-delay: 0.5s; }
+    .dot:nth-child(3) { animation-delay: 1s; }
+
     #approveText {
       font-size: 16px;
       margin-top: 5px;
       color: var(--black);
     }
-    
+
     #appInstructions {
       font-size: 14px;
       margin-top: 5px;
       color: #666;
       font-style: italic;
     }
-    
+
     @keyframes pulse {
-      0% {
-        transform: scale(1);
-        opacity: 0.3;
-      }
-      50% {
-        transform: scale(1.2);
-        opacity: 0.1;
-      }
-      100% {
-        transform: scale(1);
-        opacity: 0.3;
-      }
+      0% { transform: scale(1); opacity: 0.3; }
+      50% { transform: scale(1.2); opacity: 0.1; }
+      100% { transform: scale(1); opacity: 0.3; }
     }
-    
+
     @keyframes dash {
-      0% {
-        stroke-dashoffset: 100;
-      }
-      70% {
-        stroke-dashoffset: 70;
-      }
-      100% {
-        stroke-dashoffset: 70;
-      }
+      0% { stroke-dashoffset: 100; }
+      70% { stroke-dashoffset: 70; }
+      100% { stroke-dashoffset: 70; }
     }
-    
+
     @keyframes dot-fade {
-      0%, 100% {
-        opacity: 0.3;
-      }
-      50% {
-        opacity: 1;
-      }
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
     }
-    
+
     @keyframes float {
-      0%, 100% {
-        transform: translateY(0);
-      }
-      50% {
-        transform: translateY(-3px);
-      }
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-3px); }
+    }
+
+    /* ---------- New styles for Create‑Account flow ---------- */
+    .create-account-link {
+      margin-top: 15px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .create-account-link a {
+      color: var(--purple);
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    #createAccountScreen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    #createAccountScreen h2 {
+      margin-bottom: 8px;
+    }
+
+    .qr-code {
+      width: 160px;
+      height: 160px;
+      margin: 20px 0;
     }
   </style>
 </head>
@@ -158,7 +162,8 @@
       <p class="welcome-description">Sign in securely using your credentials to access your account and devices.</p>
     </div>
 
-    <div class="signin-form">
+    <!-- Sign‑in form wrapper, now with id so we can toggle visibility -->
+    <div id="signinForm" class="signin-form">
       <div class="form-group" id="usernameContainer">
         <label for="username">Username</label>
         <input type="text" id="username" placeholder="Enter your username">
@@ -166,6 +171,12 @@
 
       <button type="button" id="sendButton" class="signin-button">Sign In</button>
 
+      <!-- Link to create account -->
+      <p class="create-account-link">
+        <a href="#" id="createAccountLink">Don’t have a Bastion account? Make one here</a>
+      </p>
+
+      <!-- Waiting‑for‑approval screen -->
       <div id="waitingScreen">
         <div class="shield-container">
           <svg class="shield-pulse" viewBox="0 0 24 24">
@@ -188,6 +199,14 @@
       </div>
 
       <div id="statusMessage"></div>
+    </div>
+
+    <!-- Create‑Account screen with QR code -->
+    <div id="createAccountScreen">
+      <h2>Create your Bastion account</h2>
+      <p>Download the Bastion Auth mobile app and create your account to get started.</p>
+      <img src="public/bastion-auth-qr.png" alt="Download Bastion Auth" class="qr-code">
+      <button id="backToSignIn" class="signin-button">Back to Sign In</button>
     </div>
   </main>
 
@@ -220,7 +239,7 @@
       if (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) return;
       ws = new WebSocket(WS_URL, WS_PROTO);
       ws.binaryType = 'arraybuffer';
-      ws.onopen = () => console.log('WebSocket connected');
+      ws.onopen  = () => console.log('WebSocket connected');
       ws.onerror = err => console.error('WebSocket error', err);
       ws.onclose = () => setTimeout(initWS, 3000);
       ws.onmessage = async evt => {
@@ -235,7 +254,7 @@
 
         if (msg.action === 'signin_started') {
           transactionId = msg.transaction_id;
-          currentState = msg.state;
+          currentState  = msg.state;
           showWaitingScreen();
           return;
         }
@@ -283,16 +302,11 @@
     async function sendUsernameToServer() {
       const user = document.getElementById('username').value.trim();
       if (!user) { showStatus('Please enter a username', 'error'); return; }
-      if (!ws || ws.readyState !== WebSocket.OPEN) {
-        initWS(); setTimeout(sendUsernameToServer, 500); return;
-      }
+      if (!ws || ws.readyState !== WebSocket.OPEN) { initWS(); setTimeout(sendUsernameToServer, 500); return; }
       const state = generateRandomString(16);
       let challenge;
-      try {
-        challenge = await generatePKCE();
-      } catch (e) {
-        showStatus('Crypto error', 'error'); return;
-      }
+      try { challenge = await generatePKCE(); }
+      catch (e) { showStatus('Crypto error', 'error'); return; }
       ws.send(JSON.stringify({ action: 'start_signin', client_id: CLIENT_ID, username: user, code_challenge: challenge, code_challenge_method: 'S256', state }));
       console.log('Sent start_signin');
       showWaitingScreen();
@@ -300,36 +314,47 @@
 
     function showWaitingScreen() {
       document.getElementById('usernameContainer').style.display = 'none';
-      document.getElementById('sendButton').style.display = 'none';
-      document.getElementById('waitingScreen').style.display = 'flex';
+      document.getElementById('sendButton').style.display     = 'none';
+      document.getElementById('waitingScreen').style.display  = 'flex';
+      document.getElementById('statusMessage').style.display  = 'none';
     }
 
     function resetAll() {
       if (ws) { ws.close(); ws = null; }
       document.getElementById('usernameContainer').style.display = 'block';
-      document.getElementById('sendButton').style.display = 'block';
-      document.getElementById('waitingScreen').style.display = 'none';
-      document.getElementById('statusMessage').style.display = 'none';
+      document.getElementById('sendButton').style.display       = 'block';
+      document.getElementById('waitingScreen').style.display    = 'none';
+      document.getElementById('statusMessage').style.display    = 'none';
     }
 
     function showStatus(msg, type) {
       const el = document.getElementById('statusMessage');
       el.textContent = msg;
-      el.className = type === 'error' ? 'status-error' : 'status-success';
+      el.className   = type === 'error' ? 'status-error' : 'status-success';
       el.style.display = 'block';
-      
-      // Show error messages longer than success messages
       const displayTime = type === 'error' ? ERROR_DISPLAY_TIME : 3000;
       setTimeout(() => el.style.display = 'none', displayTime);
     }
 
-    document.getElementById('backButton').onclick = resetAll;
-    document.getElementById('sendButton').onclick = sendUsernameToServer;
-    document.getElementById('username').addEventListener('keypress', function(e) {
-      if (e.key === 'Enter') {
-        sendUsernameToServer();
-      }
-    });
+    /* ---------- Navigation between Sign‑in and Create‑Account screens ---------- */
+    function showCreateAccount() {
+      document.getElementById('signinForm').style.display      = 'none';
+      document.getElementById('createAccountScreen').style.display = 'flex';
+    }
+
+    function backToSignIn() {
+      document.getElementById('createAccountScreen').style.display = 'none';
+      document.getElementById('signinForm').style.display      = 'block';
+      resetAll();
+    }
+
+    document.getElementById('createAccountLink').onclick = e => { e.preventDefault(); showCreateAccount(); };
+    document.getElementById('backToSignIn').onclick      = backToSignIn;
+
+    document.getElementById('backButton').onclick        = backToSignIn;
+    document.getElementById('sendButton').onclick        = sendUsernameToServer;
+    document.getElementById('username').addEventListener('keypress', e => { if (e.key === 'Enter') sendUsernameToServer(); });
+
     window.addEventListener('load', initWS);
   </script>
 </body>
