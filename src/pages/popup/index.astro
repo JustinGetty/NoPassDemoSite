@@ -400,7 +400,7 @@
 <body>
   <header class="modern-header">
     <div class="logo-container">
-      <img src="public/bastion-char-purple.svg" alt="BastionLogo">
+      <img src="public/Social - Purple Bg 121418.png" alt="BastionLogo">
       <span class="brand-name">Bastion Auth</span>
     </div>
     <div class="header-actions">
@@ -464,7 +464,7 @@
   </main>
 
   <script>
-    const CLIENT_ID = "test_site_1_spa_id";
+    const CLIENT_ID = "test_site_1_spa";
     const WS_URL    = "ws://192.168.1.213:8443";
     const WS_PROTO  = "echo-protocol";
     let ws = null;
@@ -541,6 +541,10 @@
           case 'approved':
             showStatus('Authentication successful!', 'success');
             resetAll();
+            return;
+          case 'invalid_spa_id':
+            resetAll();
+            showStatus(msg.error || 'Server Error, Contact Site Administrator!', 'error');
             return;
           case 'rejected':
             showStatus('Authentication rejected. Please try again.', 'error');
